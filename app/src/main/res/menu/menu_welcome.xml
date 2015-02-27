@@ -4,4 +4,10 @@
     tools:context="com.self.doug.scouting.WelcomeActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_prepare_to_teach"
+        android:title="@string/prepareToTeach"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_configureRequirements"
+        android:title="Configure Requirements"
+        app:showAsAction="never" />
 </menu>

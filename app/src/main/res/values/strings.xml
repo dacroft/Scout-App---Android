@@ -10,4 +10,7 @@
     <string name="Password">Password</string>
     <string name="loginButton">Login</string>
     <string name="SignupButton">Sign Up</string>
+    <string name="prepareToTeach">Prepare to Teach</string>
+    <string name="title_activity_configure_ranks">ConfigureRanks</string>
+    <string name="title_activity_requirements">RequirementsActivity</string>
 </resources>

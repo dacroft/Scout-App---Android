@@ -1,7 +1,9 @@
 package com.self.doug.scouting;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -59,9 +61,22 @@ public class WelcomeActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+
+        Log.v("WelcomeActivity","onOptionsItemSelected");
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        else {
+            if (id == R.id.action_configureRequirements) {
+                Log.v("WelcomeActivity","clicked button");
+                Intent intent = new Intent(WelcomeActivity.this, RequirementsActivity.class);
+                Log.v("WelcomeActivity", "created Intent");
+                startActivity(intent);
+                Log.v("WelcomeActivity","started requirements activity");
+                finish();
+                return true;
+            }
         }
 
         return super.onOptionsItemSelected(item);
