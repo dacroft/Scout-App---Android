@@ -1,8 +1,8 @@
-package com.self.doug.scouting;
+package com.self.doug.scouting.Requirements;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +11,8 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.self.doug.scouting.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +50,7 @@ public class RequirementsFragment extends Fragment implements AbsListView.OnItem
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private ListAdapter mAdapter;
+    private RequirementsListAdapter mAdapter;
 
     // TODO: Rename and change types of parameters
     public static RequirementsFragment newInstance(String param1, String param2) {

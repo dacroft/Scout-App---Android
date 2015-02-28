@@ -13,4 +13,5 @@
     <string name="prepareToTeach">Prepare to Teach</string>
     <string name="title_activity_configure_ranks">ConfigureRanks</string>
     <string name="title_activity_requirements">RequirementsActivity</string>
+    <string name="title_activity_acheivements">AcheivementsActivity</string>
 </resources>

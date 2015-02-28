@@ -10,4 +10,7 @@
     <item android:id="@+id/action_configureRequirements"
         android:title="Configure Requirements"
         app:showAsAction="never" />
+    <item android:id="@+id/action_configureAcheivements"
+        android:title="Configure Acheivements"
+        app:showAsAction="never" />
 </menu>

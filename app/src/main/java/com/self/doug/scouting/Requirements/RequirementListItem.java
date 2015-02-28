@@ -1,4 +1,4 @@
-package com.self.doug.scouting;
+package com.self.doug.scouting.Requirements;
 
 /**
  * Created by Doug on 2/26/15.

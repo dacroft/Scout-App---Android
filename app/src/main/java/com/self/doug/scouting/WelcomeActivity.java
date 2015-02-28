@@ -8,6 +8,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
+import com.self.doug.scouting.Acheivements.AchievementsActivity;
+import com.self.doug.scouting.Requirements.RequirementsActivity;
+
 
 public class WelcomeActivity extends ActionBarActivity {
 
@@ -67,16 +70,18 @@ public class WelcomeActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-        else {
-            if (id == R.id.action_configureRequirements) {
-                Log.v("WelcomeActivity","clicked button");
-                Intent intent = new Intent(WelcomeActivity.this, RequirementsActivity.class);
-                Log.v("WelcomeActivity", "created Intent");
-                startActivity(intent);
-                Log.v("WelcomeActivity","started requirements activity");
-                finish();
-                return true;
-            }
+        else if (id == R.id.action_configureRequirements) {
+            Intent intent = new Intent(WelcomeActivity.this, RequirementsActivity.class);
+            startActivity(intent);
+            finish();
+            return true;
+        }
+        else if(id == R.id.action_configureAcheivements)
+        {
+            Intent intent = new Intent(WelcomeActivity.this, AchievementsActivity.class);
+            startActivity(intent);
+            finish();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
