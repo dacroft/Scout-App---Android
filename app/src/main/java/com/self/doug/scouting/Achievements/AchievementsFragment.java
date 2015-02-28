@@ -1,14 +1,20 @@
-package com.self.doug.scouting.Acheivements;
+package com.self.doug.scouting.Achievements;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,9 +33,11 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class AchievementsFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class AchievementsFragment extends Fragment implements AbsListView.OnItemClickListener, ActionMode.Callback {
 
-    private List<AchievementListItem> acheivementsList;
+    private List<AchievementListItem> achievementsList;
+    protected Object mActionMode;
+    public int selectedItem = -1;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -83,11 +91,11 @@ public class AchievementsFragment extends Fragment implements AbsListView.OnItem
         //mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
         //        android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
 
-        acheivementsList = new ArrayList();
-        acheivementsList.add(new AchievementListItem("Example 1"));
-        acheivementsList.add(new AchievementListItem("Example 2"));
-        acheivementsList.add(new AchievementListItem("Example 3"));
-        mAdapter = new AchievementsListAdapter(getActivity(), acheivementsList);
+        achievementsList = new ArrayList();
+        achievementsList.add(new AchievementListItem("Example 1"));
+        achievementsList.add(new AchievementListItem("Example 2"));
+        achievementsList.add(new AchievementListItem("Example 3"));
+        mAdapter = new AchievementsListAdapter(getActivity(), achievementsList);
     }
 
     @Override
@@ -102,6 +110,33 @@ public class AchievementsFragment extends Fragment implements AbsListView.OnItem
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
 
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                if (mActionMode != null) {
+                    return false;
+                }
+                selectedItem = position-1;
+
+                // Start the CAB using the ActionMode.Callback defined above
+                getActivity().startActionMode(AchievementsFragment.this);
+                view.setSelected(true);
+                return true;
+            }
+        });
+
+        // Add a header
+        View header = getActivity().getLayoutInflater().inflate(R.layout.achievement_header, null);
+        Button addButton = (Button)header.findViewById(R.id.add_achievement);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "Add Button Clicked", Toast.LENGTH_LONG).show();
+            }
+        });
+        ((ListView) mListView).addHeaderView(header);
         return view;
     }
 
@@ -129,7 +164,7 @@ public class AchievementsFragment extends Fragment implements AbsListView.OnItem
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
             //mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
-            AchievementListItem item = this.acheivementsList.get(position);
+            AchievementListItem item = this.achievementsList.get(position-1);
             Toast.makeText(getActivity(), item.getItemTitle() + " Clicked!", Toast.LENGTH_SHORT).show();
 
         }
@@ -146,6 +181,49 @@ public class AchievementsFragment extends Fragment implements AbsListView.OnItem
         if (emptyView instanceof TextView) {
             ((TextView) emptyView).setText(emptyText);
         }
+    }
+
+    private void show() {
+        Toast.makeText(getActivity(), String.valueOf(selectedItem), Toast.LENGTH_LONG).show();
+    }
+
+    // Called when the action mode is created; startActionMode() was called
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        // Inflate a menu resource providing context menu items
+        MenuInflater inflater = mode.getMenuInflater();
+        // Assumes that you have "contexual.xml" menu resources
+        inflater.inflate(R.menu.menu_acheivement_cab, menu);
+        return true;
+    }
+
+    // Called each time the action mode is shown. Always called after
+    // onCreateActionMode, but
+    // may be called multiple times if the mode is invalidated.
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false; // Return false if nothing is done
+    }
+
+    // Called when the user selects a contextual menu item
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_edit_achievement:
+                show();
+                // Action picked, so close the CAB
+                mode.finish();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    // Called when the user exits the action mode
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        mActionMode = null;
+        selectedItem = -1;
     }
 
     /**

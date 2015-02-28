@@ -37,7 +37,7 @@
             android:label="@string/title_activity_requirements" >
         </activity>
         <activity
-            android:name=".Acheivements.AchievementsActivity"
+            android:name=".Achievements.AchievementsActivity"
             android:label="@string/title_activity_acheivements" >
         </activity>
     </application>

@@ -8,7 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
-import com.self.doug.scouting.Acheivements.AchievementsActivity;
+import com.self.doug.scouting.Achievements.AchievementsActivity;
 import com.self.doug.scouting.Requirements.RequirementsActivity;
 
 

@@ -1,4 +1,4 @@
-package com.self.doug.scouting.Acheivements;
+package com.self.doug.scouting.Achievements;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;

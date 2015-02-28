@@ -1,4 +1,4 @@
-package com.self.doug.scouting.Acheivements;
+package com.self.doug.scouting.Achievements;
 
 /**
  * Created by Doug on 2/26/15.

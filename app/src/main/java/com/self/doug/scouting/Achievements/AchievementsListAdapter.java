@@ -1,4 +1,4 @@
-package com.self.doug.scouting.Acheivements;
+package com.self.doug.scouting.Achievements;
 
 import android.app.Activity;
 import android.content.Context;
