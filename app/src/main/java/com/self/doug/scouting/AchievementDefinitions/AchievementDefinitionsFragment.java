@@ -21,10 +21,9 @@ import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.self.doug.scouting.ParseWrapper.ParseObjectWrapper;
 import com.self.doug.scouting.R;
+import com.self.doug.scouting.ScoutingApplication;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,23 +113,19 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
 
     private void updateData() {
         // Obtain current list of achievement definitions.
-        ParseQuery<ParseObject> achievementDefinitionParseQuery = ParseQuery.getQuery(AchievementDefinition.t_tablename);
-        achievementDefinitionParseQuery.findInBackground(new FindCallback<ParseObject>() {
+        ParseQuery<AchievementDefinition> achievementDefinitionParseQuery = ParseQuery.getQuery(AchievementDefinition.class);
+        achievementDefinitionParseQuery.findInBackground(new FindCallback<AchievementDefinition>() {
             @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (e != null)
+            public void done(List<AchievementDefinition> list, ParseException e) {
+                if (list != null)
                 {
-                    return;
+                    AchievementDefinitionsFragment.this.mAdapter.clear();
+                    AchievementDefinitionsFragment.this.achievementDefinitions = list;
+                    AchievementDefinitionsFragment.this.mAdapter.addAll(achievementDefinitions);
+                    AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
+
                 }
-                AchievementDefinitionsFragment.this.achievementDefinitions.clear();
-                //AchievementDefinitionsFragment.this.mAdapter.clear();
-                for (ParseObject parseObject : list)
-                {
-                    AchievementDefinition achievementDefinition = new AchievementDefinition((parseObject));
-                    AchievementDefinitionsFragment.this.achievementDefinitions.add(achievementDefinition);
-                }
-                //AchievementDefinitionsFragment.this.mAdapter.addAll(achievementDefinitions);
-                AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
+
             }
         });
     }
@@ -173,10 +168,8 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
                 //Toast.makeText(getActivity(), "Add Button Clicked", Toast.LENGTH_LONG).show();
                 //
                 Intent intent = new Intent(AchievementDefinitionsFragment.this.getActivity(), AchievementDefinitionEditActivity.class);
-                intent.putExtra(AchievementDefinition.t_tablename, (new AchievementDefinition("text here")));
-                //intent.putExtra(AchievementDefinition.t_tablename, (new AchievementDefinition()));
+                ScoutingApplication.tempObject = new AchievementDefinition();
                 AchievementDefinitionsFragment.this.startActivityForResult(intent, AchievementDefinitionsFragment.AchievementDefinitionRequestCode);
-                //AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
 
             }
         });
@@ -188,18 +181,14 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == AchievementDefinitionsFragment.AchievementDefinitionRequestCode)
         {
-            // Create an AchievementDefinition
-            ParseObjectWrapper parseObjectWrapper = data.getParcelableExtra(AchievementDefinition.t_tablename);
-            AchievementDefinition achievementDefinition = new AchievementDefinition(parseObjectWrapper);
-            try {
-                achievementDefinition.po.fetchIfNeeded();
-            } catch (ParseException e) {
+            // Get the updated definition
+            AchievementDefinition achievementDefinition = (AchievementDefinition) ScoutingApplication.tempObject;
 
-            }
 
             // Add the new item to the list now
+            AchievementDefinitionsFragment.this.mAdapter.clear();
             this.achievementDefinitions.add(achievementDefinition);
-            //this.mAdapter.add(achievementDefinition);
+            AchievementDefinitionsFragment.this.mAdapter.addAll(achievementDefinitions);
             AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
 
         }
