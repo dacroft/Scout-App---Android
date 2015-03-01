@@ -3,7 +3,7 @@ package com.self.doug.scouting.ParseWrapper;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-//See http://www.androidbook.com/akc/display?url=DisplayNoteIMPURL&reportId=4539&ownerUserId=android
+// See http://codewithchris.com
 public class ValueField  implements Parcelable {
     public static String FT_int = "Integer";
     public static String FT_string = "String";

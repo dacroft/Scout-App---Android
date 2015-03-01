@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import com.parse.ParseUser;
 
-
+// See http://codewithchris.com
 public class User
         implements Parcelable
 {

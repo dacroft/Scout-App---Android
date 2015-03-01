@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+// See http://codewithchris.com
 public class ParseObjectWrapper
         implements Parcelable
 {

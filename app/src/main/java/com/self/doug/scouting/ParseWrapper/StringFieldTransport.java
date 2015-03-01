@@ -4,6 +4,7 @@ import android.os.Parcel;
 
 import com.parse.ParseObject;
 
+// See http://codewithchris.com
 public class StringFieldTransport implements IFieldTransport {
     ParseObject po;
     Parcel p;

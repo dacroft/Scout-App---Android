@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import java.util.Date;
 
+// See http://codewithchris.com
 public class ParseObjectEssentials
         implements Parcelable
 {
@@ -48,10 +49,19 @@ public class ParseObjectEssentials
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        dest.writeLong(this.createdAt.getTime());
-        dest.writeParcelable(createdBy, flags);
-        dest.writeLong(lastUpdatedAt.getTime());
-        dest.writeParcelable(lastUpdatedBy, flags);
+        if (this.createdAt != null) {
+            dest.writeLong(this.createdAt.getTime());
+        }
+        if (this.createdBy != null)
+        {
+            dest.writeParcelable(createdBy, flags);
+        }
+        if (this.lastUpdatedAt != null) {
+            dest.writeLong(lastUpdatedAt.getTime());
+        }
+        if (this.lastUpdatedBy != null) {
+            dest.writeParcelable(lastUpdatedBy, flags);
+        }
     }
     public static ParseObjectEssentials getDefault()
     {

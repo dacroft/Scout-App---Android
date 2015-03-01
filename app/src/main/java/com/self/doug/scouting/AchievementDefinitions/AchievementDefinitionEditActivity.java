@@ -9,26 +9,41 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.self.doug.scouting.ParseWrapper.ParseObjectWrapper;
 import com.self.doug.scouting.R;
 
 public class AchievementDefinitionEditActivity extends ActionBarActivity {
 
+    private EditText achievementDefinitionTitleEditText;
+    private AchievementDefinition achievementDefinition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_achievement_definition_creation);
+
+        // Obtain the Achievement Definition that was sent in
+        Intent intent = this.getIntent();
+        ParseObjectWrapper parseObjectWrapper = (ParseObjectWrapper)intent.getParcelableExtra(AchievementDefinition.t_tablename);
+        this.achievementDefinition = new AchievementDefinition(parseObjectWrapper);
+
+        // Add the title from the definition to the edit text
+        this.achievementDefinitionTitleEditText = (EditText)this.findViewById(R.id.achievementDefinitionTitleEditText);
+        this.achievementDefinitionTitleEditText.setText(this.achievementDefinition.getTitle());
 
         // Handle click of the accept button
         Button acceptNewAchievementDefinitionButton = (Button)this.findViewById(R.id.acceptNewAchievementDefinition);
         acceptNewAchievementDefinitionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Get a reference to the edit text.
-                EditText achievementDefinitionTitle = (EditText)AchievementDefinitionEditActivity.this.findViewById(R.id.achievementDefinitionTitleEditText);
-
-                // Output the information
+                // Send the Result
                 Intent output = new Intent();
-                output.putExtra(AchievementDefinitionsFragment.NewAchievementDefinitionTitle, achievementDefinitionTitle.getText().toString());
+                AchievementDefinition achievementDefinitionToSave = new AchievementDefinition(AchievementDefinitionEditActivity.this.achievementDefinition);
+                achievementDefinitionToSave.setTitle(AchievementDefinitionEditActivity.this.achievementDefinitionTitleEditText.getText().toString());
+                achievementDefinitionToSave.po.saveEventually();
+                output.putExtra(AchievementDefinition.t_tablename, achievementDefinitionToSave);
                 AchievementDefinitionEditActivity.this.setResult(RESULT_OK, output);
 
 

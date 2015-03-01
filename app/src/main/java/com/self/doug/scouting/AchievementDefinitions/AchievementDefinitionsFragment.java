@@ -21,7 +21,9 @@ import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.self.doug.scouting.ParseWrapper.ParseObjectWrapper;
 import com.self.doug.scouting.R;
 
 import java.util.ArrayList;
@@ -40,8 +42,8 @@ import java.util.List;
 public class AchievementDefinitionsFragment extends Fragment implements AbsListView.OnItemClickListener, ActionMode.Callback {
 
     // Request achievement definition information from other Views.
-    public static final String NewAchievementDefinitionTitle = "NewAchievementDefinitionTitle";
-    public static final int NewAchievementDefinitionRequestCode = 1;
+    public static final String ModifiedAchievementDefinition = "ModifiedAchievementDefinition";
+    public static final int AchievementDefinitionRequestCode = 1;
 
     private List<AchievementDefinition> achievementDefinitions;
     protected Object mActionMode;
@@ -112,17 +114,23 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
 
     private void updateData() {
         // Obtain current list of achievement definitions.
-        ParseQuery<AchievementDefinition> achievementDefinitionParseQuery = ParseQuery.getQuery(AchievementDefinition.class);
-        achievementDefinitionParseQuery.findInBackground(new FindCallback<AchievementDefinition>() {
+        ParseQuery<ParseObject> achievementDefinitionParseQuery = ParseQuery.getQuery(AchievementDefinition.t_tablename);
+        achievementDefinitionParseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(List<AchievementDefinition> achievementDefinitions, ParseException e) {
-                //AchievementDefinitionsFragment.this.achievementDefinitions = achievementDefinitions;
-                //AchievementDefinitionsFragment.this.mAdapter = new AchievementDefinitionsListAdapter(AchievementDefinitionsFragment.this.getActivity(),AchievementDefinitionsFragment.this.achievementDefinitions);
-                AchievementDefinitionsFragment.this.achievementDefinitions = achievementDefinitions;
-                AchievementDefinitionsFragment.this.mAdapter.clear();
-                AchievementDefinitionsFragment.this.mAdapter.addAll(achievementDefinitions);
+            public void done(List<ParseObject> list, ParseException e) {
+                if (e != null)
+                {
+                    return;
+                }
+                AchievementDefinitionsFragment.this.achievementDefinitions.clear();
+                //AchievementDefinitionsFragment.this.mAdapter.clear();
+                for (ParseObject parseObject : list)
+                {
+                    AchievementDefinition achievementDefinition = new AchievementDefinition((parseObject));
+                    AchievementDefinitionsFragment.this.achievementDefinitions.add(achievementDefinition);
+                }
+                //AchievementDefinitionsFragment.this.mAdapter.addAll(achievementDefinitions);
                 AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
-
             }
         });
     }
@@ -165,8 +173,10 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
                 //Toast.makeText(getActivity(), "Add Button Clicked", Toast.LENGTH_LONG).show();
                 //
                 Intent intent = new Intent(AchievementDefinitionsFragment.this.getActivity(), AchievementDefinitionEditActivity.class);
-                AchievementDefinitionsFragment.this.startActivityForResult(intent, AchievementDefinitionsFragment.NewAchievementDefinitionRequestCode);
-                AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
+                intent.putExtra(AchievementDefinition.t_tablename, (new AchievementDefinition("text here")));
+                //intent.putExtra(AchievementDefinition.t_tablename, (new AchievementDefinition()));
+                AchievementDefinitionsFragment.this.startActivityForResult(intent, AchievementDefinitionsFragment.AchievementDefinitionRequestCode);
+                //AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
 
             }
         });
@@ -176,15 +186,22 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == AchievementDefinitionsFragment.NewAchievementDefinitionRequestCode)
+        if (requestCode == AchievementDefinitionsFragment.AchievementDefinitionRequestCode)
         {
             // Create an AchievementDefinition
-            AchievementDefinition achievementDefinition = new AchievementDefinition(data.getStringExtra(AchievementDefinitionsFragment.NewAchievementDefinitionTitle));
-            achievementDefinition.saveEventually();
+            ParseObjectWrapper parseObjectWrapper = data.getParcelableExtra(AchievementDefinition.t_tablename);
+            AchievementDefinition achievementDefinition = new AchievementDefinition(parseObjectWrapper);
+            try {
+                achievementDefinition.po.fetchIfNeeded();
+            } catch (ParseException e) {
+
+            }
 
             // Add the new item to the list now
             this.achievementDefinitions.add(achievementDefinition);
-            this.mAdapter.add(achievementDefinition);
+            //this.mAdapter.add(achievementDefinition);
+            AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
+
         }
     }
 
