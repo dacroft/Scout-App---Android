@@ -1,4 +1,4 @@
-package com.self.doug.scouting.Achievements;
+package com.self.doug.scouting.AchievementDefinitions;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -7,15 +7,15 @@ import android.view.MenuItem;
 
 import com.self.doug.scouting.R;
 
-public class AchievementsActivity extends ActionBarActivity implements AchievementsFragment.OnFragmentInteractionListener {
+public class AchievementDefinitionsActivity extends ActionBarActivity implements AchievementDefinitionsFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_achievements);
+        setContentView(R.layout.activity_achievement_definitions);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new AchievementsFragment())
+                    .add(R.id.container, new AchievementDefinitionsFragment())
                     .commit();
         }
     }
@@ -24,7 +24,7 @@ public class AchievementsActivity extends ActionBarActivity implements Achieveme
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_achievements, menu);
+        getMenuInflater().inflate(R.menu.menu_achievement_definitions, menu);
         return true;
     }
 

@@ -1,4 +1,4 @@
-package com.self.doug.scouting.Achievements;
+package com.self.doug.scouting.AchievementDefinitions;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,12 +15,12 @@ import java.util.List;
 /**
  * Created by Doug on 2/26/15.
  */
-public class AchievementsListAdapter extends ArrayAdapter
+public class AchievementDefinitionsListAdapter extends ArrayAdapter
 {
     private Context context;
     private boolean useList = true;
 
-    public AchievementsListAdapter(Context context, List items) {
+    public AchievementDefinitionsListAdapter(Context context, List items) {
         super(context, android.R.layout.simple_list_item_1, items);
         this.context = context;
     }
@@ -41,7 +41,7 @@ public class AchievementsListAdapter extends ArrayAdapter
      */
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
-        AchievementListItem item = (AchievementListItem)getItem(position);
+        AchievementDefinition item = (AchievementDefinition)getItem(position);
         View viewToUse = null;
 
         // This block exists to inflate the settings list item conditionally based on whether
@@ -50,9 +50,9 @@ public class AchievementsListAdapter extends ArrayAdapter
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         if (convertView == null) {
             if(useList){
-                viewToUse = mInflater.inflate(R.layout.achievement_list_item, null);
+                viewToUse = mInflater.inflate(R.layout.achievement_definition_list_item, null);
             } else {
-                viewToUse = mInflater.inflate(R.layout.achievement_grid_item, null);
+                viewToUse = mInflater.inflate(R.layout.achievement_definition_grid_item, null);
             }
 
             holder = new ViewHolder();
@@ -63,7 +63,7 @@ public class AchievementsListAdapter extends ArrayAdapter
             holder = (ViewHolder) viewToUse.getTag();
         }
 
-        holder.titleText.setText(item.getItemTitle());
+        holder.titleText.setText(item.getTitle());
         return viewToUse;
     }
 }

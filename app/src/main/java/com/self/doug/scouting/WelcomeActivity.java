@@ -8,7 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
-import com.self.doug.scouting.Achievements.AchievementsActivity;
+import com.self.doug.scouting.AchievementDefinitions.AchievementDefinitionsActivity;
 import com.self.doug.scouting.Requirements.RequirementsActivity;
 
 
@@ -78,7 +78,7 @@ public class WelcomeActivity extends ActionBarActivity {
         }
         else if(id == R.id.action_configureAcheivements)
         {
-            Intent intent = new Intent(WelcomeActivity.this, AchievementsActivity.class);
+            Intent intent = new Intent(WelcomeActivity.this, AchievementDefinitionsActivity.class);
             startActivity(intent);
             finish();
             return true;

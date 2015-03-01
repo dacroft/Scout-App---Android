@@ -29,16 +29,16 @@
             android:label="@string/title_activity_welcome" >
         </activity>
         <activity
-            android:name=".RequirementActivity"
-            android:label="@string/title_activity_requirements" >
-        </activity>
-        <activity
             android:name=".Requirements.RequirementsActivity"
             android:label="@string/title_activity_requirements" >
         </activity>
         <activity
-            android:name=".Achievements.AchievementsActivity"
+            android:name=".AchievementDefinitions.AchievementDefinitionsActivity"
             android:label="@string/title_activity_acheivements" >
+        </activity>
+        <activity
+            android:name=".AchievementDefinitions.AchievementDefinitionEditActivity"
+            android:label="@string/title_activity_achievement_definition_creation" >
         </activity>
     </application>
 

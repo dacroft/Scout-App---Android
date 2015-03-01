@@ -11,6 +11,6 @@
         android:title="Configure Requirements"
         app:showAsAction="never" />
     <item android:id="@+id/action_configureAcheivements"
-        android:title="Configure Acheivements"
+        android:title="Configure Achievement Definitions"
         app:showAsAction="never" />
 </menu>

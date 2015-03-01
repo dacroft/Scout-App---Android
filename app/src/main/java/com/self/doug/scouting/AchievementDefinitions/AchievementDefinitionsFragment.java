@@ -1,7 +1,8 @@
-package com.self.doug.scouting.Achievements;
+package com.self.doug.scouting.AchievementDefinitions;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -18,6 +19,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.self.doug.scouting.R;
 
 import java.util.ArrayList;
@@ -33,11 +37,16 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class AchievementsFragment extends Fragment implements AbsListView.OnItemClickListener, ActionMode.Callback {
+public class AchievementDefinitionsFragment extends Fragment implements AbsListView.OnItemClickListener, ActionMode.Callback {
 
-    private List<AchievementListItem> achievementsList;
+    // Request achievement definition information from other Views.
+    public static final String NewAchievementDefinitionTitle = "NewAchievementDefinitionTitle";
+    public static final int NewAchievementDefinitionRequestCode = 1;
+
+    private List<AchievementDefinition> achievementDefinitions;
     protected Object mActionMode;
     public int selectedItem = -1;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,11 +68,11 @@ public class AchievementsFragment extends Fragment implements AbsListView.OnItem
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private AchievementsListAdapter mAdapter;
+    private AchievementDefinitionsListAdapter mAdapter;
 
     // TODO: Rename and change types of parameters
-    public static AchievementsFragment newInstance(String param1, String param2) {
-        AchievementsFragment fragment = new AchievementsFragment();
+    public static AchievementDefinitionsFragment newInstance(String param1, String param2) {
+        AchievementDefinitionsFragment fragment = new AchievementDefinitionsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -75,7 +84,7 @@ public class AchievementsFragment extends Fragment implements AbsListView.OnItem
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public AchievementsFragment() {
+    public AchievementDefinitionsFragment() {
     }
 
     @Override
@@ -87,21 +96,41 @@ public class AchievementsFragment extends Fragment implements AbsListView.OnItem
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        // TODO: Change Adapter to display your content
-        //mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-        //        android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
+        // Add an empty list of AchievementDefinitions to the array adapter
+        this.achievementDefinitions = new ArrayList<AchievementDefinition>();
+        this.mAdapter = new AchievementDefinitionsListAdapter(this.getActivity(),this.achievementDefinitions);
 
-        achievementsList = new ArrayList();
-        achievementsList.add(new AchievementListItem("Example 1"));
-        achievementsList.add(new AchievementListItem("Example 2"));
-        achievementsList.add(new AchievementListItem("Example 3"));
-        mAdapter = new AchievementsListAdapter(getActivity(), achievementsList);
+        this.updateData();  // Update our data
+
+
+    }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//    }
+
+    private void updateData() {
+        // Obtain current list of achievement definitions.
+        ParseQuery<AchievementDefinition> achievementDefinitionParseQuery = ParseQuery.getQuery(AchievementDefinition.class);
+        achievementDefinitionParseQuery.findInBackground(new FindCallback<AchievementDefinition>() {
+            @Override
+            public void done(List<AchievementDefinition> achievementDefinitions, ParseException e) {
+                //AchievementDefinitionsFragment.this.achievementDefinitions = achievementDefinitions;
+                //AchievementDefinitionsFragment.this.mAdapter = new AchievementDefinitionsListAdapter(AchievementDefinitionsFragment.this.getActivity(),AchievementDefinitionsFragment.this.achievementDefinitions);
+                AchievementDefinitionsFragment.this.achievementDefinitions = achievementDefinitions;
+                AchievementDefinitionsFragment.this.mAdapter.clear();
+                AchievementDefinitionsFragment.this.mAdapter.addAll(achievementDefinitions);
+                AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
+
+            }
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_achievements, container, false);
+        View view = inflater.inflate(R.layout.fragment_achievement_definitions, container, false);
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
@@ -121,23 +150,42 @@ public class AchievementsFragment extends Fragment implements AbsListView.OnItem
                 selectedItem = position-1;
 
                 // Start the CAB using the ActionMode.Callback defined above
-                getActivity().startActionMode(AchievementsFragment.this);
+                getActivity().startActionMode(AchievementDefinitionsFragment.this);
                 view.setSelected(true);
                 return true;
             }
         });
 
         // Add a header
-        View header = getActivity().getLayoutInflater().inflate(R.layout.achievement_header, null);
+        View header = getActivity().getLayoutInflater().inflate(R.layout.achievement_definition_header, null);
         Button addButton = (Button)header.findViewById(R.id.add_achievement);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Add Button Clicked", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getActivity(), "Add Button Clicked", Toast.LENGTH_LONG).show();
+                //
+                Intent intent = new Intent(AchievementDefinitionsFragment.this.getActivity(), AchievementDefinitionEditActivity.class);
+                AchievementDefinitionsFragment.this.startActivityForResult(intent, AchievementDefinitionsFragment.NewAchievementDefinitionRequestCode);
+                AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
+
             }
         });
         ((ListView) mListView).addHeaderView(header);
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AchievementDefinitionsFragment.NewAchievementDefinitionRequestCode)
+        {
+            // Create an AchievementDefinition
+            AchievementDefinition achievementDefinition = new AchievementDefinition(data.getStringExtra(AchievementDefinitionsFragment.NewAchievementDefinitionTitle));
+            achievementDefinition.saveEventually();
+
+            // Add the new item to the list now
+            this.achievementDefinitions.add(achievementDefinition);
+            this.mAdapter.add(achievementDefinition);
+        }
     }
 
     @Override
@@ -164,8 +212,8 @@ public class AchievementsFragment extends Fragment implements AbsListView.OnItem
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
             //mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
-            AchievementListItem item = this.achievementsList.get(position-1);
-            Toast.makeText(getActivity(), item.getItemTitle() + " Clicked!", Toast.LENGTH_SHORT).show();
+            AchievementDefinition item = this.achievementDefinitions.get(position-1);
+            Toast.makeText(getActivity(), item.getTitle() + " Clicked!", Toast.LENGTH_SHORT).show();
 
         }
     }
@@ -193,7 +241,7 @@ public class AchievementsFragment extends Fragment implements AbsListView.OnItem
         // Inflate a menu resource providing context menu items
         MenuInflater inflater = mode.getMenuInflater();
         // Assumes that you have "contexual.xml" menu resources
-        inflater.inflate(R.menu.menu_acheivement_cab, menu);
+        inflater.inflate(R.menu.menu_achievement_definition_cab, menu);
         return true;
     }
 
@@ -210,7 +258,8 @@ public class AchievementsFragment extends Fragment implements AbsListView.OnItem
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit_achievement:
-                show();
+                Intent intent = new Intent();
+                //show();
                 // Action picked, so close the CAB
                 mode.finish();
                 return true;
