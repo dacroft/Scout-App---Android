@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.parse.ParseException;
+import com.parse.SaveCallback;
 import com.self.doug.scouting.R;
 import com.self.doug.scouting.ScoutingApplication;
 
@@ -36,10 +38,17 @@ public class AchievementDefinitionEditActivity extends ActionBarActivity {
         acceptNewAchievementDefinitionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // progressBarVisible
                 // Send the Result
                 Intent output = new Intent();
                 AchievementDefinitionEditActivity.this.achievementDefinition.setTitle(AchievementDefinitionEditActivity.this.achievementDefinitionTitleEditText.getText().toString());
-                AchievementDefinitionEditActivity.this.achievementDefinition.saveEventually();
+                AchievementDefinitionEditActivity.this.achievementDefinition.pinInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        AchievementDefinitionEditActivity.this.achievementDefinition.saveEventually();
+                        //progressBarInvisible
+                    }
+                });
                 ScoutingApplication.tempObject = AchievementDefinitionEditActivity.this.achievementDefinition;
                 AchievementDefinitionEditActivity.this.setResult(RESULT_OK);
 
@@ -49,6 +58,8 @@ public class AchievementDefinitionEditActivity extends ActionBarActivity {
             }
         });
     }
+
+
 
 
     @Override

@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.self.doug.scouting.R;
 import com.self.doug.scouting.ScoutingApplication;
@@ -42,7 +43,8 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
 
     // Request achievement definition information from other Views.
     public static final String ModifiedAchievementDefinition = "ModifiedAchievementDefinition";
-    public static final int AchievementDefinitionRequestCode = 1;
+    public static final int NewAchievementDefinitionRequestCode = 1;
+    public static final int ModifiedAchievementDefinitionRequestCode = 2;
 
     private List<AchievementDefinition> achievementDefinitions;
     protected Object mActionMode;
@@ -114,6 +116,10 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
     private void updateData() {
         // Obtain current list of achievement definitions.
         ParseQuery<AchievementDefinition> achievementDefinitionParseQuery = ParseQuery.getQuery(AchievementDefinition.class);
+        achievementDefinitionParseQuery.fromLocalDatastore();
+        //achievementDefinitionParseQuery.fromPin("AchievementDefinitions");
+        // progressBarVisible
+        //achievementDefinitionParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
         achievementDefinitionParseQuery.findInBackground(new FindCallback<AchievementDefinition>() {
             @Override
             public void done(List<AchievementDefinition> list, ParseException e) {
@@ -123,11 +129,48 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
                     AchievementDefinitionsFragment.this.achievementDefinitions = list;
                     AchievementDefinitionsFragment.this.mAdapter.addAll(achievementDefinitions);
                     AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
+                    // progressBarInvisible
 
+                }
+                else
+                {
+                    AchievementDefinitionsFragment.this.remoteQuery();
                 }
 
             }
         });
+
+    }
+    private void remoteQuery()
+    {
+        ParseQuery<AchievementDefinition> achievementDefinitionParseQuery = ParseQuery.getQuery(AchievementDefinition.class);
+        achievementDefinitionParseQuery.findInBackground(new FindCallback<AchievementDefinition>() {
+            @Override
+            public void done(List<AchievementDefinition> list, ParseException e) {
+                if (list != null)
+                {
+                    AchievementDefinitionsFragment.this.mAdapter.clear();
+                    AchievementDefinitionsFragment.this.achievementDefinitions = list;
+                    AchievementDefinitionsFragment.this.mAdapter.addAll(achievementDefinitions);
+                    AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
+                    // progressBarInvisible
+                    AchievementDefinitionsFragment.this.unpinAndRepin(list);
+
+                }
+                else
+                {
+                    // progressBarInvisible
+                }
+
+            }
+        });
+
+    }
+    private void unpinAndRepin(List<AchievementDefinition> data)
+    {
+        //progressBarInvisible
+        ParseObject.unpinAllInBackground(data);
+        ParseObject.pinAllInBackground(data);
     }
 
     @Override
@@ -153,6 +196,7 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
                 selectedItem = position-1;
 
                 // Start the CAB using the ActionMode.Callback defined above
+
                 getActivity().startActionMode(AchievementDefinitionsFragment.this);
                 view.setSelected(true);
                 return true;
@@ -169,7 +213,7 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
                 //
                 Intent intent = new Intent(AchievementDefinitionsFragment.this.getActivity(), AchievementDefinitionEditActivity.class);
                 ScoutingApplication.tempObject = new AchievementDefinition();
-                AchievementDefinitionsFragment.this.startActivityForResult(intent, AchievementDefinitionsFragment.AchievementDefinitionRequestCode);
+                AchievementDefinitionsFragment.this.startActivityForResult(intent, AchievementDefinitionsFragment.NewAchievementDefinitionRequestCode);
 
             }
         });
@@ -179,7 +223,7 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == AchievementDefinitionsFragment.AchievementDefinitionRequestCode)
+        if (requestCode == AchievementDefinitionsFragment.NewAchievementDefinitionRequestCode)
         {
             // Get the updated definition
             AchievementDefinition achievementDefinition = (AchievementDefinition) ScoutingApplication.tempObject;
@@ -191,6 +235,15 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
             AchievementDefinitionsFragment.this.mAdapter.addAll(achievementDefinitions);
             AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
 
+        }
+        else if (requestCode == AchievementDefinitionsFragment.ModifiedAchievementDefinitionRequestCode)
+        {
+            // Get the updated definition
+            AchievementDefinition achievementDefinition = (AchievementDefinition) ScoutingApplication.tempObject;
+
+
+            // Update the item in the list now
+            AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
         }
     }
 
@@ -264,8 +317,22 @@ public class AchievementDefinitionsFragment extends Fragment implements AbsListV
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit_achievement:
-                Intent intent = new Intent();
-                //show();
+                Intent intent = new Intent(AchievementDefinitionsFragment.this.getActivity(), AchievementDefinitionEditActivity.class);
+                AchievementDefinition achievementDefinitionToEdit = this.achievementDefinitions.get(AchievementDefinitionsFragment.this.selectedItem);
+                ScoutingApplication.tempObject = achievementDefinitionToEdit;
+                AchievementDefinitionsFragment.this.startActivityForResult(intent, AchievementDefinitionsFragment.ModifiedAchievementDefinitionRequestCode);
+                // Action picked, so close the CAB
+                mode.finish();
+                return true;
+            case R.id.action_remove_achievement:
+                AchievementDefinition achievementDefinition = this.achievementDefinitions.get(AchievementDefinitionsFragment.this.selectedItem);
+                achievementDefinition.deleteEventually();
+                AchievementDefinitionsFragment.this.mAdapter.clear();
+                AchievementDefinitionsFragment.this.achievementDefinitions.remove(AchievementDefinitionsFragment.this.selectedItem);
+                AchievementDefinitionsFragment.this.mAdapter.addAll(achievementDefinitions);
+                AchievementDefinitionsFragment.this.mAdapter.notifyDataSetChanged();
+                // Add the new item to the list now
+
                 // Action picked, so close the CAB
                 mode.finish();
                 return true;
